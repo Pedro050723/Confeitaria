@@ -1,0 +1,13 @@
+{% extends 'base.html' %} {% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-8">
+        <div class="alert alert-danger shadow-sm" role="alert">
+            <h4 class="alert-heading">🚫 Ops! Algo deu errado.</h4>
+            <p>Ocorreu um erro ao tentar gerar o recibo no Google Sheets.</p>
+            <hr>
+            <p class="mb-0 font-monospace small">{{ mensagem }}</p>
+        </div>
+        <a href="javascript:history.back()" class="btn btn-secondary mt-3">Voltar</a>
+    </div>
+</div>
+{% endblock %}

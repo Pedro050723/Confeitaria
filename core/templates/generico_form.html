@@ -1,0 +1,20 @@
+{% extends 'base.html' %} {% block content %}
+<nav class="mb-4">
+    <a href="{% url 'dashboard' %}" class="btn btn-primary">Início</a>
+    <a href="{% url 'novo_pedido' %}" class="btn btn-success">+ Pedido</a>
+    <a href="{% url 'novo_cliente' %}" class="btn btn-outline-primary">Cadastrar Cliente</a>
+    <a href="{% url 'novo_produto' %}" class="btn btn-outline-secondary">Cadastrar Produto</a>
+</nav>
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card p-4 shadow-sm">
+            <h3 class="mb-3">{{ titulo }}</h3>
+            <form method="post">
+                {% csrf_token %} {{ form.as_p }}
+                <button type="submit" class="btn btn-primary w-100">Salvar</button>
+                <a href="javascript:history.back()" class="btn btn-link w-100 mt-2">Voltar</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

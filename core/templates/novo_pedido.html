@@ -1,0 +1,135 @@
+{% extends 'base.html' %} {% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-11">
+        <h2 class="mb-3">{{ titulo }}</h2>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="card p-4 mb-4 shadow-sm">
+                <h4 class="text-primary mb-3">Dados Gerais</h4>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Cliente</label> {{ form.cliente }}
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">Data Entrega</label> {{ form.data_entrega }}
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">Hora</label> {{ form.hora_entrega }}
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label fw-bold">Local de Entrega</label> {{ form.local_entrega }}
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label fw-bold">Observações</label> {{ form.observacoes_gerais }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="card p-4 shadow-sm">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="text-primary m-0">Itens do Pedido</h4>
+                    <button type="button" id="add-item-btn" class="btn btn-outline-primary btn-sm fw-bold">
+                        + Adicionar Item
+                    </button>
+                </div>
+
+                {{ formset.management_form }}
+
+                <div id="lista-itens">
+                    {% for item_form in formset %}
+                    <div class="item-pedido row g-2 mb-3 align-items-end border-bottom pb-3">
+                        {{ item_form.id }}
+
+                        <div class="col-md-4">
+                            <label class="form-label small text-muted">Produto</label> {{ item_form.produto }}
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="form-label small text-muted">Preço (Opcional)</label> {{ item_form.preco_no_momento }}
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="form-label small text-muted">Qtd</label> {{ item_form.quantidade }}
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label small text-muted">Detalhes (Ex: Sem glúten)</label> {{ item_form.detalhes }}
+                        </div>
+
+                        {% if formset.can_delete %}
+                        <div class="col-md-1 text-center">
+                            <label class="form-label small text-danger">Apagar</label>
+                            <div>{{ item_form.DELETE }}</div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div id="empty-form" style="display:none;">
+                <div class="item-pedido row g-2 mb-3 align-items-end border-bottom pb-3">
+                    <div class="col-md-4">
+                        <label class="form-label small text-muted">Produto</label> {{ formset.empty_form.produto }}
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label small text-muted">Preço (Opcional)</label> {{ formset.empty_form.preco_no_momento }}
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label small text-muted">Qtd</label> {{ formset.empty_form.quantidade }}
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label small text-muted">Detalhes</label> {{ formset.empty_form.detalhes }}
+                    </div>
+
+                    <div class="col-md-1 text-center">
+                        <button type="button" class="btn btn-danger btn-sm remove-item-btn" title="Remover linha">X</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-grid gap-2 mt-4 mb-5">
+                <button type="submit" class="btn btn-success btn-lg fw-bold">{{ botao_texto }}</button>
+                <a href="{% url 'dashboard' %}" class="btn btn-secondary">Cancelar / Voltar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const addItemBtn = document.getElementById('add-item-btn');
+        const listaItens = document.getElementById('lista-itens');
+        const emptyFormTemplate = document.getElementById('empty-form').innerHTML;
+        const totalFormsInput = document.getElementById('id_itens-TOTAL_FORMS');
+
+        addItemBtn.addEventListener('click', function() {
+            // 1. Pega o número atual de formulários
+            const formIdx = parseInt(totalFormsInput.value);
+
+            // 2. Cria o novo HTML substituindo o placeholder '__prefix__' pelo número atual
+            const newFormHtml = emptyFormTemplate.replace(/__prefix__/g, formIdx);
+
+            // 3. Cria um elemento div e insere o HTML
+            const newDiv = document.createElement('div');
+            newDiv.innerHTML = newFormHtml;
+
+            // 4. Adiciona na tela
+            listaItens.appendChild(newDiv);
+
+            // 5. Atualiza o contador do Django
+            totalFormsInput.value = formIdx + 1;
+
+            // 6. Ativa o botão X (remover) do novo item
+            newDiv.querySelector('.remove-item-btn').addEventListener('click', function() {
+                newDiv.remove();
+            });
+        });
+    });
+</script>
+{% endblock %}
